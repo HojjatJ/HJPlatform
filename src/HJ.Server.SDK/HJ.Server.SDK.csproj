@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\HJ.Server.Contracts\HJ.Server.Contracts.csproj" />
@@ -11,3 +11,4 @@
   </PropertyGroup>
 
 </Project>
+

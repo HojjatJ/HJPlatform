@@ -1,3 +1,5 @@
+using HJ.Server.Domain.Products;
+using HJ.Server.Domain.Tenancy;
 using HJ.Server.Domain.Installations;
 using HJ.Server.Domain.Logging;
 using HJ.Server.Domain.Operations;
@@ -10,6 +12,12 @@ namespace HJ.Server.Infrastructure.Persistence;
 
 public class HJDbContext : DbContext
 {
+    public DbSet<Product> Products => Set<Product>();
+
+    public DbSet<ProductVersion> ProductVersions => Set<ProductVersion>();
+
+    public DbSet<Tenant> Tenants => Set<Tenant>();
+
     public HJDbContext(DbContextOptions<HJDbContext> options)
         : base(options)
     {
@@ -39,3 +47,4 @@ public class HJDbContext : DbContext
             typeof(HJDbContext).Assembly);
     }
 }
+
