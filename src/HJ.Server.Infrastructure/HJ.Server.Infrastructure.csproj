@@ -12,7 +12,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
+    <PackageReference Include="SQLitePCLRaw.core" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
+    <PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -22,4 +27,5 @@
   </PropertyGroup>
 
 </Project>
+
 

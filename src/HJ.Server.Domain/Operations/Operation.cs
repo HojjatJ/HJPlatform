@@ -1,9 +1,10 @@
+using HJ.Server.Domain.Common;
 namespace HJ.Server.Domain.Operations;
 
 
-public class Operation
+public class Operation : BaseEntity
 {
-    public Guid Id { get; set; }
+    
 
     public Guid InstallationId { get; set; }
 
@@ -17,3 +18,4 @@ public class Operation
 
     public string Status { get; set; } = default!;
 }
+

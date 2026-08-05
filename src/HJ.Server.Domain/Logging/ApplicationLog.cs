@@ -1,9 +1,10 @@
+using HJ.Server.Domain.Common;
 namespace HJ.Server.Domain.Logging;
 
 
-public class ApplicationLog
+public class ApplicationLog : BaseEntity
 {
-    public Guid Id { get; set; }
+    
 
     public Guid InstallationId { get; set; }
 
@@ -17,5 +18,6 @@ public class ApplicationLog
 
     public string? PropertiesJson { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    
 }
+

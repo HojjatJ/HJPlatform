@@ -1,9 +1,10 @@
+$path = "src\HJ.Server.Infrastructure\DependencyInjection\ServiceCollectionExtensions.cs"
+
+$content = @'
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using HJ.Server.Infrastructure.Persistence;
-using HJ.Server.Domain.Products;
-using HJ.Server.Infrastructure.Persistence.Repositories;
 
 namespace HJ.Server.Infrastructure.DependencyInjection;
 
@@ -18,9 +19,10 @@ public static class ServiceCollectionExtensions
             options.UseSqlite(
                 configuration.GetConnectionString("Default"));
         });
-        
-        services.AddScoped<IProductRepository, ProductRepository>();
 
         return services;
     }
 }
+'@
+
+Set-Content -Path $path -Value $content -Encoding UTF8

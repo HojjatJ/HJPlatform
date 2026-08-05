@@ -1,3 +1,4 @@
+using HJ.Server.Application.DependencyInjection;
 using HJ.Server.Infrastructure.DependencyInjection;
 using FastEndpoints;
 using FastEndpoints.Swagger;
@@ -5,6 +6,8 @@ using Scalar.AspNetCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHJApplication();
 
 
 // -------------------------
@@ -73,5 +76,9 @@ app.MapScalarApiReference(options =>
 
 
 app.Run();
+
+
+
+
 
 

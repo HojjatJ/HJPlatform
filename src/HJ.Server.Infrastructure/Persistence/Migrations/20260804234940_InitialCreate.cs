@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -82,7 +82,7 @@ namespace HJ.Server.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OptimizationBatches",
+                name: "ProcessingJobes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -101,7 +101,7 @@ namespace HJ.Server.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OptimizationBatches", x => x.Id);
+                    table.PrimaryKey("PK_ProcessingJobes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -173,14 +173,14 @@ namespace HJ.Server.Infrastructure.Persistence.Migrations
                 column: "Type");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OptimizationBatches_BatchId",
-                table: "OptimizationBatches",
+                name: "IX_ProcessingJobes_BatchId",
+                table: "ProcessingJobes",
                 column: "BatchId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_OptimizationBatches_OperationId",
-                table: "OptimizationBatches",
+                name: "IX_ProcessingJobes_OperationId",
+                table: "ProcessingJobes",
                 column: "OperationId");
 
             migrationBuilder.CreateIndex(
@@ -215,10 +215,11 @@ namespace HJ.Server.Infrastructure.Persistence.Migrations
                 name: "Operations");
 
             migrationBuilder.DropTable(
-                name: "OptimizationBatches");
+                name: "ProcessingJobes");
 
             migrationBuilder.DropTable(
                 name: "TelemetryEvents");
         }
     }
 }
+

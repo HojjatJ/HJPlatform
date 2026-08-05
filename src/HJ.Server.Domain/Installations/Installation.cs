@@ -1,9 +1,10 @@
+using HJ.Server.Domain.Common;
 namespace HJ.Server.Domain.Installations;
 
 
-public class Installation
+public class Installation : BaseEntity
 {
-    public Guid Id { get; set; }
+    
 
     public Guid InstallationId { get; set; }
 
@@ -15,3 +16,4 @@ public class Installation
 
     public DateTime LastSeenAt { get; set; }
 }
+

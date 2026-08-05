@@ -1,14 +1,14 @@
-using HJ.Server.Domain.Optimization;
+using HJ.Server.Domain.Processing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HJ.Server.Infrastructure.Persistence.Configurations;
 
 
-public class OptimizationBatchConfiguration 
-    : IEntityTypeConfiguration<OptimizationBatch>
+public class ProcessingJobConfiguration 
+    : IEntityTypeConfiguration<ProcessingJob>
 {
-    public void Configure(EntityTypeBuilder<OptimizationBatch> builder)
+    public void Configure(EntityTypeBuilder<ProcessingJob> builder)
     {
         builder.HasKey(x => x.Id);
 
@@ -31,3 +31,4 @@ public class OptimizationBatchConfiguration
             .HasMaxLength(50);
     }
 }
+

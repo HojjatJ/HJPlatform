@@ -1,9 +1,10 @@
+using HJ.Server.Domain.Common;
 namespace HJ.Server.Domain.Installations;
 
 
-public class InstallationEnvironment
+public class InstallationEnvironment : BaseEntity
 {
-    public Guid Id { get; set; }
+    
 
     public Guid InstallationId { get; set; }
 
@@ -19,5 +20,6 @@ public class InstallationEnvironment
 
     public string? HardwareIdentifier { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    
 }
+

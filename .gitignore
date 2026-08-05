@@ -30,3 +30,7 @@ Thumbs.db
 # Local settings
 appsettings.Development.json
 
+**/bin/
+**/obj/
+tree_output.txt
+**/AllCsFiles.txt

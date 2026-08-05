@@ -32,3 +32,4 @@ public class ProductVersion : BaseEntity
         UpdatePolicy = UpdatePolicy.Optional;
     }
 }
+

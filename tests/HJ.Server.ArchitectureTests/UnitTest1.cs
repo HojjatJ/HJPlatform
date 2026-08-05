@@ -1,4 +1,4 @@
-﻿namespace HJ.Server.IntegrationTests;
+﻿namespace HJ.Server.ArchitectureTests;
 
 public class UnitTest1
 {

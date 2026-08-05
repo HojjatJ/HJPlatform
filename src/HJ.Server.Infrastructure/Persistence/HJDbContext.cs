@@ -3,7 +3,7 @@ using HJ.Server.Domain.Tenancy;
 using HJ.Server.Domain.Installations;
 using HJ.Server.Domain.Logging;
 using HJ.Server.Domain.Operations;
-using HJ.Server.Domain.Optimization;
+using HJ.Server.Domain.Processing;
 using HJ.Server.Domain.Telemetry;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,7 +34,7 @@ public class HJDbContext : DbContext
 
     public DbSet<ApplicationLog> ApplicationLogs => Set<ApplicationLog>();
 
-    public DbSet<OptimizationBatch> OptimizationBatches => Set<OptimizationBatch>();
+    public DbSet<ProcessingJob> ProcessingJobes => Set<ProcessingJob>();
 
 
 
@@ -47,4 +47,5 @@ public class HJDbContext : DbContext
             typeof(HJDbContext).Assembly);
     }
 }
+
 

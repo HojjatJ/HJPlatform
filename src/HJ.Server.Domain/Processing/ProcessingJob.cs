@@ -1,7 +1,7 @@
-namespace HJ.Server.Domain.Optimization;
+namespace HJ.Server.Domain.Processing;
 
 
-public class OptimizationBatch
+public class ProcessingJob
 {
     public Guid Id { get; set; }
 
