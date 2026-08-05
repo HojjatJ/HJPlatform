@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HJ.Server.Api/HJ.Server.Api.csproj" />
+    <Project Path="src/HJ.Server.Application/HJ.Server.Application.csproj" />
+    <Project Path="src/HJ.Server.Contracts/HJ.Server.Contracts.csproj" />
+    <Project Path="src/HJ.Server.Domain/HJ.Server.Domain.csproj" />
+    <Project Path="src/HJ.Server.Foundation/HJ.Server.Foundation.csproj" />
+    <Project Path="src/HJ.Server.Infrastructure/HJ.Server.Infrastructure.csproj" />
+    <Project Path="src/HJ.Server.SDK/HJ.Server.SDK.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HJ.Server.IntegrationTests/HJ.Server.IntegrationTests.csproj" />
+    <Project Path="tests/HJ.Server.UnitTests/HJ.Server.UnitTests.csproj" />
+  </Folder>
+</Solution>
