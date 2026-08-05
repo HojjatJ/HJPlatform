@@ -468,3 +468,24 @@ OperationExecution TelemetryEvent ApplicationLog
 # وضعیت مدل
 
 این مدل به عنوان **Baseline Domain Model (V1)** پذیرفته شده و هرگونه تغییر ساختاری در Entityها، روابط یا Aggregateها باید از طریق مستندات Architecture Decision Record (ADR) انجام شود.
+
+
+## Implementation Status Update
+Implemented:
+- Tenant Aggregate foundation
+- Product Aggregate
+- ProductVersion persistence
+
+Partially Designed:
+- Installation Aggregate
+- Operation Aggregate
+- Telemetry correlation model
+
+Not Yet Implemented:
+- Installation database tables
+- Operation persistence
+- Telemetry ingestion
+- Client SDK integration
+
+This document remains the domain reference model.
+Implementation status must not be confused with domain design.
