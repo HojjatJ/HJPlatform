@@ -3,6 +3,7 @@ using System;
 using HJ.Server.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HJ.Server.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(HJDbContext))]
-    partial class HJDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260806135022_UpdateInstallationModel")]
+    partial class UpdateInstallationModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -199,6 +202,63 @@ namespace HJ.Server.Infrastructure.Persistence.Migrations
                     b.HasIndex("Type");
 
                     b.ToTable("Operations");
+                });
+
+            modelBuilder.Entity("HJ.Server.Domain.Processing.ProcessingJob", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BatchId")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("ConcurrencyLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("DurationMs")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ExecutionSource")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("FailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FilesCount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("OperationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ProcessingMode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<long>("SavedBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("SuccessCount")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("TargetSizeKB")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BatchId")
+                        .IsUnique();
+
+                    b.HasIndex("OperationId");
+
+                    b.ToTable("ProcessingJobes");
                 });
 
             modelBuilder.Entity("HJ.Server.Domain.Products.Product", b =>

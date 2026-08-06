@@ -1,1 +1,0 @@
-dotnet add .\src\HJ.Server.Infrastructure\HJ.Server.Infrastructure.csproj package Microsoft.EntityFrameworkCore.Sqlite

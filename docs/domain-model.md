@@ -1,7 +1,9 @@
 # HJPlatform Domain Model (V1)
 
-> **Status:** Stable (V1)
+> **Status:** Stable (V1) — Baseline
 > **Last Updated:** 2026-08-05
+> این سند فقط طراحی دامنه است. برای وضعیت فعلی پیاده‌سازی → `IMPLEMENTATION-STATUS.md`
+> تغییر ساختاری در این سند فقط از طریق ADR مجاز است.
 
 ---
 
@@ -469,23 +471,4 @@ OperationExecution TelemetryEvent ApplicationLog
 
 این مدل به عنوان **Baseline Domain Model (V1)** پذیرفته شده و هرگونه تغییر ساختاری در Entityها، روابط یا Aggregateها باید از طریق مستندات Architecture Decision Record (ADR) انجام شود.
 
-
-## Implementation Status Update
-Implemented:
-- Tenant Aggregate foundation
-- Product Aggregate
-- ProductVersion persistence
-
-Partially Designed:
-- Installation Aggregate
-- Operation Aggregate
-- Telemetry correlation model
-
-Not Yet Implemented:
-- Installation database tables
-- Operation persistence
-- Telemetry ingestion
-- Client SDK integration
-
-This document remains the domain reference model.
-Implementation status must not be confused with domain design.
+> **مهم:** وضعیت پیاده‌سازی (چه چیزی الان واقعاً در کد وجود دارد) در این سند نگهداری نمی‌شود — این سند فقط طراحی هدف را نشان می‌دهد. برای وضعیت فعلی → `IMPLEMENTATION-STATUS.md`.

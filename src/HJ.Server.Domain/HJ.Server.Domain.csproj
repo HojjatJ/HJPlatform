@@ -6,5 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-</Project>
+  <ItemGroup>
+    <ProjectReference Include="..\HJ.Server.Foundation\HJ.Server.Foundation.csproj" />
+  </ItemGroup>
 
+</Project>
