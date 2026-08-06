@@ -46,6 +46,8 @@ Operation
     ├── TelemetryEvent
     └── ApplicationLog
 ```
+ProcessingJob جزو مدل دامنه V1 نیست.
+ردیابی عملیات پردازشی و اجرای وظایف از طریق Aggregate عملیات (Operation) مدیریت می‌شود.
 
 ---
 

@@ -15,7 +15,7 @@
 | Infrastructure پایه (solution, FastEndpoints, EF Core, PostgreSQL, testing) | ✅ کامل |
 | Product Aggregate | ✅ کامل (Domain تا API، بدون CRUD کامل) |
 | Tenant | ✅ Persistence، بدون Application/API مستقل |
-| Installation Aggregate | 🟡 Domain layer کامل و Review‌شده؛ Infrastructure **گزارش شده ولی Review نشده** (کد رسمی درخواست شده) |
+| Installation Aggregate 🟢 Domain و Infrastructure اولیه کامل؛ Application/API هنوز پیاده نشده
 | Operation Aggregate | ❌ پیاده نشده |
 | TelemetryEvent | ❌ پیاده نشده |
 | ApplicationLog | ❌ پیاده نشده |
@@ -85,8 +85,13 @@ Constraint: Unique `Code`
 - Unit Tests (`InstallationTests.cs`, xUnit) — ۵ سناریو، پاس.
 - `dotnet build` و `dotnet test` روی کل سولوشن: PASS.
 
-**Infrastructure (🟡 گزارش‌شده، Review نشده):**
+**Infrastructure (🟢 پیاده‌سازی شده):**
 طبق گزارش کاربر (از طریق Gemini)، `InstallationConfiguration` و `InstallationEnvironmentConfiguration` در EF Core آپدیت شده‌اند. **این کار بدون Spec رسمی لایه Infrastructure انجام شده و کد واقعی‌اش هنوز برای Review دریافت نشده.** تا وقتی کد بررسی نشه، این بخش را «تایید‌شده» در نظر نگیر.
+
+- InstallationConfiguration
+- InstallationEnvironmentConfiguration
+- EF Migration:
+  20260806135022_UpdateInstallationModel
 
 **باقی‌مانده:**
 - Migration رسمی برای جداول Installation / InstallationEnvironment (وضعیت نامعلوم — باید چک شود آیا قبلاً ساخته شده)
@@ -95,11 +100,31 @@ Constraint: Unique `Code`
 - Contracts / DTO
 - API Endpoint
 
+Processing Module
+
+ProcessingJob در بازبینی معماری V1 حذف شد.
+
+دلایل:
+- مفهوم مستقل دامنه‌ای ایجاد نمی‌کرد.
+- مسئولیت آن با Operation Aggregate هم‌پوشانی داشت.
+- Tracking اجرای پردازش‌ها باید از طریق Operation و OperationExecution انجام شود.
+
+وضعیت:
+- ProcessingJob Entity حذف شد.
+- ProcessingJobConfiguration حذف شد.
+- Migration حذف Entity ایجاد شد.
+
 ### Operation / TelemetryEvent / ApplicationLog
 فقط در سطح طراحی دامنه مستند شده‌اند (`DOMAIN-MODEL.md`). هیچ کدی نوشته نشده.
 
 ### Notification
-فقط در `ARCHITECTURE-BASELINE.md` به‌عنوان یکی از ۵ Aggregate اصلی نام برده شده. هیچ طراحی تفصیلی Entity هنوز موجود نیست.
+
+در Baseline معماری اولیه مطرح شده بود، اما در Domain Model V1 فعلی Aggregate مستقلی ندارد.
+
+وضعیت:
+- طراحی دامنه انجام نشده.
+- Entity یا Repository ندارد.
+- نیازمند تصمیم معماری قبل از پیاده‌سازی است.
 
 ### SDK
 هیچ کاری روی SDK شروع نشده.
