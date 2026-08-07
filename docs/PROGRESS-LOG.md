@@ -144,3 +144,21 @@ Split the original four context documents into a cleaner structure to avoid dupl
 Next: دریافت کد Infrastructure فعلی → Review → یا تایید یا اصلاح → سپس Spec رسمی Infrastructure (اگر لازم شد).
 
 <!-- ورودی بعدی را اینجا اضافه کن، جدیدترین‌ها پایین -->
+
+---
+
+## 2026-08-07 — Application / Infrastructure / API Completion Review
+
+Completed:
+
+- Application layer review completed.
+- API endpoints reviewed.
+- Infrastructure persistence reviewed.
+- Exception handling flow verified.
+- Documentation synchronized.
+
+Validation:
+
+- dotnet build PASS
+- dotnet test PASS
+

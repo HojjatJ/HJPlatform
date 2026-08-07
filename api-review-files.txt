@@ -1,0 +1,259 @@
+===== HJPlatform API Review =====
+
+
+===== FILE: D:\Projects\Visual Studio\HJPlatform\src\HJ.Server.Api\Program.cs =====
+
+using HJ.Server.Application.DependencyInjection;
+using HJ.Server.Infrastructure.DependencyInjection;
+using FastEndpoints;
+using FastEndpoints.Swagger;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHJApplication();
+builder.Services.AddHJInfrastructure();
+builder.Services.AddFastEndpoints();
+builder.Services.SwaggerDocument();
+
+var app = builder.Build();
+
+app.UseFastEndpoints();
+app.UseSwaggerGen();
+
+app.Run();
+
+public partial class Program { }
+
+===== FILE: D:\Projects\Visual Studio\HJPlatform\src\HJ.Server.Api\appsettings.json =====
+
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "Default": "Host=localhost;Database=HJPlatform;Username=postgres;Password=postgres"
+  }
+}
+
+===== FILE: D:\Projects\Visual Studio\HJPlatform\src\HJ.Server.Api\Endpoints\Health\HealthEndpoint.cs =====
+
+using FastEndpoints;
+
+namespace HJ.Server.Api.Endpoints.Health;
+
+
+public class HealthEndpoint : EndpointWithoutRequest<HealthResponse>
+{
+    public override void Configure()
+    {
+        Get("/api/health");
+
+        AllowAnonymous();
+
+        Summary(s =>
+        {
+            s.Summary = "Returns API health status.";
+            s.Description = "Used for monitoring and availability checks.";
+        });
+    }
+
+
+    public override async Task HandleAsync(CancellationToken ct)
+    {
+        await SendAsync(
+            new HealthResponse
+            {
+                Status = "ok",
+                Service = "HJPlatform",
+                Utc = DateTime.UtcNow
+            },
+            cancellation: ct);
+    }
+}
+
+
+public class HealthResponse
+{
+    public string Status { get; set; } = default!;
+
+    public string Service { get; set; } = default!;
+
+    public DateTime Utc { get; set; }
+}
+
+===== FILE: D:\Projects\Visual Studio\HJPlatform\src\HJ.Server.Api\Endpoints\Installations\GetInstallationEndpoint.cs =====
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using FastEndpoints;
+using HJ.Server.Contracts.Installations;
+using HJ.Server.Application.Installations;
+
+namespace HJ.Server.Api.Endpoints.Installations;
+
+public class GetInstallationEndpoint : EndpointWithoutRequest<InstallationDto>
+{
+    private readonly IInstallationService _service;
+
+    public GetInstallationEndpoint(IInstallationService service)
+    {
+        _service = service;
+    }
+
+    public override void Configure()
+    {
+        Get("/api/installations/{installationId}");
+        AllowAnonymous();
+    }
+
+    public override async Task HandleAsync(CancellationToken ct)
+    {
+        var installationId = Route<Guid>("installationId");
+        var result = await _service.GetAsync(installationId, ct);
+        
+        await SendAsync(result, cancellation: ct);
+    }
+}
+
+===== FILE: D:\Projects\Visual Studio\HJPlatform\src\HJ.Server.Api\Endpoints\Installations\RecordHeartbeatEndpoint.cs =====
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using FastEndpoints;
+using HJ.Server.Contracts.Installations;
+using HJ.Server.Application.Installations;
+
+namespace HJ.Server.Api.Endpoints.Installations;
+
+public class RecordHeartbeatEndpoint : Endpoint<RecordHeartbeatRequest>
+{
+    private readonly IInstallationService _service;
+
+    public RecordHeartbeatEndpoint(IInstallationService service)
+    {
+        _service = service;
+    }
+
+    public override void Configure()
+    {
+        Post("/api/installations/{installationId}/heartbeats");
+        AllowAnonymous();
+    }
+
+    public override async Task HandleAsync(RecordHeartbeatRequest req, CancellationToken ct)
+    {
+        var installationId = Route<Guid>("installationId");
+        
+        await _service.RecordHeartbeatAsync(installationId, req, ct);
+        
+        await SendOkAsync(cancellation: ct);
+    }
+}
+
+===== FILE: D:\Projects\Visual Studio\HJPlatform\src\HJ.Server.Api\Endpoints\Installations\RegisterInstallationEndpoint.cs =====
+
+using System.Threading;
+using System.Threading.Tasks;
+using FastEndpoints;
+using HJ.Server.Contracts.Installations;
+using HJ.Server.Application.Installations;
+
+namespace HJ.Server.Api.Endpoints.Installations;
+
+public class RegisterInstallationEndpoint : Endpoint<RegisterInstallationRequest, InstallationDto>
+{
+    private readonly IInstallationService _service;
+
+    public RegisterInstallationEndpoint(IInstallationService service)
+    {
+        _service = service;
+    }
+
+    public override void Configure()
+    {
+        Post("/api/installations");
+        AllowAnonymous();
+    }
+
+    public override async Task HandleAsync(RegisterInstallationRequest req, CancellationToken ct)
+    {
+        var result = await _service.RegisterAsync(req, ct);
+        
+        await SendCreatedAtAsync<GetInstallationEndpoint>(
+            new { installationId = result.InstallationId }, result, generateAbsoluteUrl: true, cancellation: ct);
+    }
+}
+
+===== FILE: D:\Projects\Visual Studio\HJPlatform\src\HJ.Server.Api\Endpoints\Products\CreateProductEndpoint.cs =====
+
+using FastEndpoints;
+using HJ.Server.Application.Products;
+using HJ.Server.Contracts.Products.Requests;
+using HJ.Server.Contracts.Products;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace HJ.Server.Api.Endpoints.Products;
+
+public class CreateProductEndpoint 
+    : Endpoint<CreateProductRequest, ProductDto>
+{
+    private readonly IProductService _service;
+
+    public CreateProductEndpoint(
+        IProductService service)
+    {
+        _service = service;
+    }
+
+    public override void Configure()
+    {
+        Post("/api/products");
+        AllowAnonymous();
+
+        Summary(s =>
+        {
+            s.Summary = "Creates a new product.";
+            s.Description = "Creates a product in the system.";
+        });
+    }
+
+    public override async Task HandleAsync(
+        CreateProductRequest req,
+        CancellationToken ct)
+    {
+        var result = await _service.CreateAsync(req, ct);
+
+        await SendAsync(result, cancellation: ct);
+    }
+}
+
+===== FILE: D:\Projects\Visual Studio\HJPlatform\src\HJ.Server.Api\Extensions\DatabaseExtensions.cs =====
+
+using HJ.Server.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+namespace HJ.Server.Api.Extensions;
+
+
+public static class DatabaseExtensions
+{
+    public static IServiceCollection AddHJDatabase(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddDbContext<HJDbContext>(options =>
+        {
+            options.UseNpgsql(
+                configuration.GetConnectionString("Default"));
+        });
+
+        return services;
+    }
+}

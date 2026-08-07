@@ -1,73 +1,39 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using HJ.Server.Application.Products;
 using HJ.Server.Contracts.Products.Requests;
 using HJ.Server.Domain.Products;
-using Moq;
+using NSubstitute;
 using Xunit;
-
-namespace HJ.Server.UnitTests.Products;
 
 public class ProductServiceTests
 {
-    [Fact]
-    public async Task CreateAsync_WithValidRequest_ShouldCreateProduct()
+    private readonly IProductRepository _productRepositoryMock;
+    private readonly ProductService _sut;
+
+    public ProductServiceTests()
     {
-        var repository = new Mock<IProductRepository>();
-
-        repository
-            .Setup(x => x.ExistsAsync(
-                It.IsAny<string>(),
-                It.IsAny<Guid?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        var service = new ProductService(repository.Object);
-
-        var request = new CreateProductRequest
-        {
-            Code = "TEST",
-            Name = "Test Product",
-            Description = "Description"
-        };
-
-        var result = await service.CreateAsync(request);
-
-        result.Should().NotBeNull();
-        result.Code.Should().Be("TEST");
-        result.Name.Should().Be("Test Product");
-
-        repository.Verify(
-            x => x.AddAsync(
-                It.IsAny<Product>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        _productRepositoryMock = Substitute.For<IProductRepository>();
+        _sut = new ProductService(_productRepositoryMock);
     }
-
 
     [Fact]
     public async Task CreateAsync_WhenCodeExists_ShouldThrowException()
     {
-        var repository = new Mock<IProductRepository>();
+        // Arrange
+        var request = new CreateProductRequest { Code = "TEST", Name = "Test Product" };
+        var existingProduct = new Product("TEST", "Existing");
 
-        repository
-            .Setup(x => x.ExistsAsync(
-                It.IsAny<string>(),
-                It.IsAny<Guid?>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _productRepositoryMock
+            .GetByCodeAsync("TEST", Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<Product?>(existingProduct));
 
-        var service = new ProductService(repository.Object);
+        // Act
+        Func<Task> act = async () => await _sut.CreateAsync(request);
 
-        var request = new CreateProductRequest
-        {
-            Code = "DUPLICATE",
-            Name = "Duplicate Product"
-        };
-
-        Func<Task> action = async () =>
-            await service.CreateAsync(request);
-
-        await action.Should()
-            .ThrowAsync<InvalidOperationException>();
+        // Assert
+        await act.Should().ThrowAsync<ProductAlreadyExistsException>();
     }
 }

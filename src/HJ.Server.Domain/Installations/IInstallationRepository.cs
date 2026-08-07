@@ -6,8 +6,9 @@ namespace HJ.Server.Domain.Installations;
 
 public interface IInstallationRepository
 {
-    Task<Installation?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Installation?> GetByInstallationIdAsync(Guid installationId, CancellationToken cancellationToken = default);
-    Task<bool> ExistsByInstallationIdAsync(Guid installationId, CancellationToken cancellationToken = default);
     Task AddAsync(Installation installation, CancellationToken cancellationToken = default);
+    Task UpdateAsync(Installation installation, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(Guid installationId, CancellationToken cancellationToken = default);
+    Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

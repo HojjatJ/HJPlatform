@@ -1,0 +1,709 @@
+# ARCHITECTURE DIRECTIVE — 2026-08-07
+
+## DIRECTIVE-002 — Installation Module Completion
+
+**از:** Chief Architect
+**به:** Solution / Executive Architect (GPT)
+**برای اجرا با:** Implementation Agent (Gemini)
+
+---
+
+# هدف
+
+تکمیل Aggregate مربوط به `Installation` از وضعیت فعلی تا یک Feature کامل و قابل انتشار طبق Pipeline رسمی HJPlatform.
+
+این Directive ادامه‌ی تصمیم‌های قبلی است و هیچ تصمیم معماری جدیدی ایجاد نمی‌کند.
+
+مرجع اجباری:
+
+* `ARCHITECTURE-RULES.md`
+* `DOMAIN-MODEL.md`
+* `IMPLEMENTATION-STATUS.md`
+* `PROGRESS-LOG.md`
+* `ADR-LOG.md` (پس از ایجاد)
+
+---
+
+# بخش A — وضعیت فعلی پذیرفته‌شده
+
+## Domain
+
+وضعیت:
+
+✅ تایید شده
+
+موارد موجود:
+
+```
+Installation
+InstallationEnvironment
+IInstallationRepository
+InstallationAlreadyExistsException
+InstallationNotFoundException
+```
+
+قوانین:
+
+* `Installation` Aggregate Root است.
+* `InstallationEnvironment` Entity داخلی است.
+* Repository مستقل برای Environment ممنوع است.
+* `InstallationId` شناسه کسب‌وکاری است.
+* `Id` کلید داخلی Aggregate است.
+
+---
+
+# بخش B — Phase 0: تثبیت وضعیت قبل از کدنویسی
+
+این مرحله قبل از هر توسعه‌ای اجرا شود.
+
+## B1 — بررسی DbContext
+
+فایل:
+
+```
+src/HJ.Server.Infrastructure/Persistence/HJDbContext.cs
+```
+
+بررسی شود:
+
+وجود:
+
+```csharp
+DbSet<Installation> Installations
+DbSet<InstallationEnvironment> InstallationEnvironments
+```
+
+و نحوه اعمال Configuration:
+
+مجاز:
+
+```csharp
+modelBuilder.ApplyConfigurationsFromAssembly(...)
+```
+
+یا:
+
+```csharp
+modelBuilder.ApplyConfiguration(...)
+```
+
+باید مشخص شود.
+
+خروجی مورد انتظار:
+
+گزارش تایید:
+
+* DbSet وجود دارد / ندارد
+* Configuration متصل است / نیست
+
+---
+
+## B2 — Migration Review
+
+اجرا:
+
+```powershell
+dotnet ef migrations list `
+ --project src/HJ.Server.Infrastructure `
+ --startup-project src/HJ.Server.Api
+```
+
+بررسی:
+
+* آیا Migration مربوط به Installation وجود دارد؟
+* آیا Migration آخر شامل ProcessingJob removal است؟
+* آیا Migration جدید لازم است؟
+
+قانون:
+
+Migrationهای قبلی تغییر داده نشوند.
+
+---
+
+## B3 — ProcessingJob Verification
+
+هدف:
+
+اطمینان از حذف کامل مفهوم دامنه‌ای.
+
+بررسی:
+
+نباید وجود داشته باشد:
+
+```
+src/HJ.Server.Domain.Processing
+```
+
+نباید وجود داشته باشد:
+
+```
+ProcessingJob Entity
+ProcessingJob Configuration
+ProcessingJob DbSet
+```
+
+اما وجود در Migrationهای قدیمی قابل قبول است.
+
+---
+
+## B4 — اصلاح مستندات معماری
+
+قبل از ادامه:
+
+اصلاح شود:
+
+`DOMAIN-MODEL.md`
+
+از:
+
+```
+Operation
+ ├── OperationExecution
+ ├── TelemetryEvent
+ └── ApplicationLog
+```
+
+به:
+
+```
+Operation
+ └── OperationExecution
+
+
+TelemetryEvent
+
+ApplicationLog
+```
+
+دلیل:
+
+طبق ADR-001 این سه Aggregate مستقل هستند.
+
+---
+
+# بخش C — ایجاد ADR Documentation
+
+فایل:
+
+```
+docs/ADR-LOG.md
+```
+
+ایجاد شود.
+
+ساختار:
+
+هر ADR:
+
+```markdown
+# ADR-XXX
+
+## Status
+
+Accepted
+
+## Context
+
+...
+
+## Decision
+
+...
+
+## Consequences
+
+...
+```
+
+حداقل شامل:
+
+* ADR-001 Telemetry / Logging Boundary
+* ADR-002 Tenant Aggregate
+* ADR-003 Notification Deferred
+* ADR-004 ProcessingJob Removal
+* ADR-005 BaseEntity Decision
+* ADR-006 Exception Mapping
+
+محتوا از تصمیمات ثبت‌شده در Directive قبلی استخراج شود.
+
+---
+
+# بخش D — Phase 1: Infrastructure Completion
+
+## D1 — EF Configuration
+
+فایل‌ها:
+
+ترجیحاً:
+
+```
+Persistence/Configurations/
+    InstallationConfiguration.cs
+    InstallationEnvironmentConfiguration.cs
+```
+
+هر Entity فایل مستقل داشته باشد.
+
+قواعد:
+
+### Installation
+
+Required:
+
+* Primary Key روی Id
+* Unique Index:
+
+```
+InstallationId
+```
+
+* Relationship:
+
+```
+Installation
+  1
+  |
+  *
+InstallationEnvironment
+```
+
+### Environment
+
+FK:
+
+```
+InstallationEnvironment.InstallationId
+        →
+Installation.Id
+```
+
+Cascade:
+
+مجاز:
+
+```csharp
+DeleteBehavior.Cascade
+```
+
+زیرا Environment بدون Installation معنی ندارد.
+
+---
+
+## D2 — Repository Implementation
+
+ایجاد:
+
+```
+HJ.Server.Infrastructure.Persistence.Repositories.InstallationRepository
+```
+
+پیاده‌سازی:
+
+```csharp
+IInstallationRepository
+```
+
+حداقل متدها:
+
+طبق Domain Interface موجود.
+
+Repository نباید:
+
+* Business Rule داشته باشد.
+* Exception کسب‌وکاری بسازد.
+
+---
+
+## D3 — Dependency Injection
+
+ثبت Repository:
+
+Infrastructure DI.
+
+الگو:
+
+مشابه Product.
+
+---
+
+# بخش E — Phase 2: Application Layer
+
+ایجاد:
+
+```
+HJ.Server.Application.Installations
+```
+
+## Service
+
+:
+
+```csharp
+IInstallationService
+InstallationService
+```
+
+---
+
+## Use Case 1
+
+### Register Installation
+
+ورودی:
+
+```csharp
+installationId
+productId
+productVersionId
+tenantId?
+```
+
+رفتار:
+
+1. بررسی وجود Installation
+2. اگر موجود بود:
+
+```
+InstallationAlreadyExistsException
+```
+
+3. ساخت Aggregate
+4. ذخیره Repository
+5. Return DTO
+
+---
+
+## Use Case 2
+
+### Get Installation
+
+ورودی:
+
+```csharp
+installationId
+```
+
+اگر نبود:
+
+```
+InstallationNotFoundException
+```
+
+---
+
+## Use Case 3
+
+### Record Heartbeat
+
+رفتار:
+
+اگر Installation نبود:
+
+```
+InstallationNotFoundException
+```
+
+اگر:
+
+```csharp
+productVersionId != null
+```
+
+و متفاوت بود:
+
+استفاده از رفتار Domain:
+
+```
+UpdateVersion
+```
+
+نه تغییر مستقیم Property.
+
+اگر Environment ارسال شد:
+
+```
+SetEnvironment
+```
+
+---
+
+# بخش F — Phase 3: Contracts
+
+ایجاد در:
+
+```
+HJ.Server.Contracts.Installations
+```
+
+مدل‌ها:
+
+## InstallationDto
+
+```csharp
+Id
+InstallationId
+ProductId
+ProductVersionId
+FirstSeenAt
+LastSeenAt
+Environment
+```
+
+---
+
+## InstallationEnvironmentDto
+
+```csharp
+OSVersion
+CpuName
+CpuCoreCount
+RamGB
+ScreenResolution
+HardwareIdentifier
+```
+
+---
+
+## Requests
+
+### RegisterInstallationRequest
+
+```csharp
+Guid InstallationId
+Guid ProductId
+Guid ProductVersionId
+Guid? TenantId
+```
+
+---
+
+### RecordHeartbeatRequest
+
+```csharp
+Guid? ProductVersionId
+string? OSVersion
+string? CpuName
+int? CpuCoreCount
+double? RamGB
+string? ScreenResolution
+string? HardwareIdentifier
+```
+
+---
+
+Mapping:
+
+فقط با:
+
+```
+Mapperly
+```
+
+---
+
+# بخش G — Phase 4: API
+
+FastEndpoints.
+
+## Endpoint 1
+
+```
+POST /api/installations
+```
+
+کلاس:
+
+```
+RegisterInstallationEndpoint
+```
+
+Response:
+
+```
+201 Created
+```
+
+خطای Duplicate:
+
+```
+409 Conflict
+```
+
+---
+
+## Endpoint 2
+
+```
+GET /api/installations/{installationId}
+```
+
+Response:
+
+```
+200 OK
+```
+
+Not Found:
+
+```
+404
+```
+
+---
+
+## Endpoint 3
+
+```
+POST /api/installations/{installationId}/heartbeats
+```
+
+Response:
+
+```
+200 OK
+```
+
+Not Found:
+
+```
+404
+```
+
+---
+
+# بخش H — Phase 5: Tests
+
+## Application Unit Tests
+
+اجباری:
+
+### Register
+
+* موفق
+* Duplicate
+
+### Get
+
+* Exists
+* Not Found
+
+### Heartbeat
+
+* Update heartbeat
+* Update version
+* Update environment
+* Not Found
+
+---
+
+## Integration Test
+
+سناریوی کامل:
+
+```
+POST /installations
+
+GET /installations/{id}
+
+POST /installations/{id}/heartbeats
+```
+
+با:
+
+```
+Testcontainers PostgreSQL
+```
+
+---
+
+# بخش I — Documentation Update
+
+پس از موفقیت:
+
+## IMPLEMENTATION-STATUS.md
+
+آپدیت:
+
+Installation:
+
+از:
+
+```
+Domain only
+```
+
+به:
+
+```
+Domain + Infrastructure + Application + Contracts + API + Tests
+```
+
+---
+
+## PROGRESS-LOG.md
+
+ورودی جدید:
+
+```
+2026-08-07 — Installation Module Completed
+```
+
+شامل:
+
+* فایل‌های تغییر یافته
+* Build result
+* Test result
+* Migration name
+
+---
+
+# بخش J — Definition of Done
+
+Installation فقط زمانی کامل محسوب می‌شود که:
+
+```
+[ ] DbContext verified
+[ ] Migration verified
+[ ] Repository implemented
+[ ] Application Service completed
+[ ] Contracts completed
+[ ] API endpoints completed
+[ ] Unit tests passed
+[ ] Integration tests passed
+[ ] Architecture tests passed
+[ ] Documentation updated
+[ ] Git commit created
+```
+
+---
+
+# بخش K — قوانین گزارش‌دهی
+
+معمار اجرایی فقط در موارد زیر برگردد:
+
+1. پایان کامل Directive
+2. نیاز به تغییر Domain Model
+3. نیاز به ADR جدید
+4. شکست Build/Test بعد از دو تلاش اصلاح
+5. وضعیت Migration غیرقابل تعیین
+
+در غیر این صورت، رفت‌وبرگشت با Gemini مستقل انجام شود.
+
+---
+
+# فرمت گزارش نهایی
+
+گزارش نهایی باید شامل:
+
+1. خلاصه وضعیت Aggregateها
+2. فایل‌های تغییر یافته
+3. Migrationهای ایجادشده یا تاییدشده
+4. وضعیت Build
+5. وضعیت Test
+6. وضعیت Architecture Test
+7. موارد باز باقی‌مانده
+8. پیشنهاد فاز بعدی
+
+---
+
+**پایان DIRECTIVE-002**

@@ -1,61 +1,40 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using HJ.Server.Domain.Products;
 using HJ.Server.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace HJ.Server.Infrastructure.Persistence.Repositories;
 
 public class ProductRepository : IProductRepository
 {
-    private readonly HJDbContext _dbContext;
+    private readonly HJDbContext _context;
 
-    public ProductRepository(HJDbContext dbContext)
+    public ProductRepository(HJDbContext context)
     {
-        _dbContext = dbContext;
+        _context = context;
     }
 
-    public async Task<Product?> GetAsync(
-        Guid id,
-        CancellationToken cancellationToken = default)
+    public async Task<Product?> GetByCodeAsync(string code, Guid? tenantId = null, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Products
-            .FirstOrDefaultAsync(
-                x => x.Id == id,
-                cancellationToken);
+        var query = _context.Set<Product>().AsQueryable();
+
+        if (tenantId.HasValue)
+        {
+            // query = query.Where(p => p.TenantId == tenantId.Value);
+        }
+
+        return await query.FirstOrDefaultAsync(p => p.Code == code, cancellationToken);
     }
 
-    public async Task<Product?> GetByCodeAsync(
-        string code,
-        Guid? tenantId = null,
-        CancellationToken cancellationToken = default)
+    public async Task AddProductAsync(Product product, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Products
-            .FirstOrDefaultAsync(
-                x => x.Code == code &&
-                     x.TenantId == tenantId,
-                cancellationToken);
+        await _context.Set<Product>().AddAsync(product, cancellationToken);
     }
 
-    public async Task AddAsync(
-        Product product,
-        CancellationToken cancellationToken = default)
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await _dbContext.Products.AddAsync(
-            product,
-            cancellationToken);
-
-        await _dbContext.SaveChangesAsync(
-            cancellationToken);
-    }
-
-    public async Task<bool> ExistsAsync(
-        string code,
-        Guid? tenantId = null,
-        CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.Products
-            .AnyAsync(
-                x => x.Code == code &&
-                     x.TenantId == tenantId,
-                cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

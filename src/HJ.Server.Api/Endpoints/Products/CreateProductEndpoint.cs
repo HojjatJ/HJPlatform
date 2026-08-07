@@ -2,6 +2,8 @@ using FastEndpoints;
 using HJ.Server.Application.Products;
 using HJ.Server.Contracts.Products.Requests;
 using HJ.Server.Contracts.Products;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HJ.Server.Api.Endpoints.Products;
 
@@ -32,8 +34,8 @@ public class CreateProductEndpoint
         CreateProductRequest req,
         CancellationToken ct)
     {
-        var result = await _service.CreateAsync(req);
+        var result = await _service.CreateAsync(req, ct);
 
-        await Send.OkAsync(result, ct);
+        await SendAsync(result, cancellation: ct);
     }
 }

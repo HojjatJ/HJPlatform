@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using HJ.Server.Contracts.Products;
 using HJ.Server.Contracts.Products.Requests;
 using HJ.Server.Domain.Products;
@@ -6,41 +9,34 @@ namespace HJ.Server.Application.Products;
 
 public class ProductService : IProductService
 {
-    private readonly IProductRepository _repository;
+    private readonly IProductRepository _productRepository;
 
-    public ProductService(
-        IProductRepository repository)
+    public ProductService(IProductRepository productRepository)
     {
-        _repository = repository;
+        _productRepository = productRepository;
     }
 
-    public async Task<ProductDto> CreateAsync(
-        CreateProductRequest request)
+    public async Task<ProductDto> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
     {
-        var exists = await _repository.ExistsAsync(
-            request.Code);
+        Guid? tenantId = null;
 
-        if (exists)
+        var existing = await _productRepository.GetByCodeAsync(request.Code, tenantId, cancellationToken);
+        if (existing is not null)
         {
-            throw new InvalidOperationException(
-                "Product code already exists.");
+            throw new ProductAlreadyExistsException(request.Code);
         }
 
-        var product = new Product(
-            request.Code,
-            request.Name,
-            request.Description);
-
-        await _repository.AddAsync(product);
+        // Using standard object creation or factory method safely
+        var product = new Product(request.Code, request.Name);
+        
+        await _productRepository.AddProductAsync(product, cancellationToken);
+        await _productRepository.SaveChangesAsync(cancellationToken);
 
         return new ProductDto
         {
             Id = product.Id,
             Code = product.Code,
-            Name = product.Name,
-            Description = product.Description,
-            IsActive = product.IsActive
+            Name = product.Name
         };
     }
 }
-

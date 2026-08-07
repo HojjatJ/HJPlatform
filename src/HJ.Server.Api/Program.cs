@@ -1,84 +1,40 @@
 using HJ.Server.Application.DependencyInjection;
 using HJ.Server.Infrastructure.DependencyInjection;
+using HJ.Server.Api.Exceptions;
 using FastEndpoints;
 using FastEndpoints.Swagger;
-using Scalar.AspNetCore;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Application and Infrastructure DI (API does not configure EF Core directly)
 builder.Services.AddHJApplication();
+builder.Services.AddHJInfrastructure();
 
-
-// -------------------------
-// Serilog
-// -------------------------
-
-builder.Host.UseSerilog((context, configuration) =>
+builder.Services.AddFastEndpoints();
+builder.Services.SwaggerDocument(o =>
 {
-    configuration
-        .ReadFrom.Configuration(context.Configuration)
-        .WriteTo.Console();
+    o.DocumentSettings = s =>
+    {
+        s.Title = "HJ Platform API";
+        s.Version = "v1";
+    };
 });
-
-
-// -------------------------
-// FastEndpoints
-// -------------------------
-
-builder.Services
-    .AddFastEndpoints()
-    .SwaggerDocument();
-
-
-// Infrastructure
-
-builder.Services.AddHJInfrastructure(
-    builder.Configuration);
-
-
-// -------------------------
-// ProblemDetails
-// -------------------------
-
-builder.Services.AddProblemDetails();
-
-
 
 var app = builder.Build();
 
+// Centralized Exception Handling Middleware
+app.ConfigureExceptionHandler();
 
-// -------------------------
-// Middleware
-// -------------------------
+// Standard Middleware Pipeline
+app.UseHttpsRedirection();
 
-app.UseSerilogRequestLogging();
-
-
-
-// -------------------------
-// API
-// -------------------------
+// Authentication & Authorization Pipeline Placeholders
+// app.UseAuthentication();
+// app.UseAuthorization();
 
 app.UseFastEndpoints();
-
-
-// -------------------------
-// Scalar
-// -------------------------
-
-app.MapScalarApiReference(options =>
-{
-    options
-        .WithTitle("HJPlatform API")
-        .WithTheme(ScalarTheme.Mars);
-});
-
+app.UseSwaggerGen();
 
 app.Run();
 
-
-
-
-
-
+public partial class Program { }

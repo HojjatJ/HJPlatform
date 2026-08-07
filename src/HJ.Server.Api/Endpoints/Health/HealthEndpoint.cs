@@ -21,14 +21,14 @@ public class HealthEndpoint : EndpointWithoutRequest<HealthResponse>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        await Send.OkAsync(
+        await SendAsync(
             new HealthResponse
             {
                 Status = "ok",
                 Service = "HJPlatform",
                 Utc = DateTime.UtcNow
             },
-            ct);
+            cancellation: ct);
     }
 }
 
@@ -41,4 +41,3 @@ public class HealthResponse
 
     public DateTime Utc { get; set; }
 }
-

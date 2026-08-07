@@ -147,3 +147,51 @@ ProcessingJob در بازبینی معماری V1 حذف شد.
 3. بخش‌های "Not Yet Implemented" را متناسب کوچک کن.
 4. تاریخ "Last updated" را عوض کن.
 5. یک ورودی متناظر هم در `PROGRESS-LOG.md` ثبت کن (آن فایل تاریخچه است، این فایل عکس لحظه‌ای است).
+
+---
+
+## API Layer — وضعیت تفصیلی
+
+**Status: Implemented and Verified**
+
+Completed:
+
+- FastEndpoints configured.
+- Health endpoint implemented.
+- Product create endpoint implemented.
+- Installation endpoints implemented.
+- Global exception handling implemented.
+- Swagger configuration completed.
+- API layer contains no business rules.
+
+---
+
+## Application Layer — وضعیت تفصیلی
+
+**Status: Implemented and Verified**
+
+Completed:
+
+- ProductService implemented.
+- InstallationService implemented.
+- FluentValidation integrated.
+- Mapperly mapping registered through DI.
+- ProductAlreadyExistsException introduced.
+- CancellationToken flow verified.
+
+---
+
+## Infrastructure Layer — وضعیت تفصیلی
+
+**Status: Implemented and Verified**
+
+Completed:
+
+- EF Core persistence configured.
+- ApplyConfigurationsFromAssembly verified.
+- Product persistence completed.
+- Installation persistence configuration completed.
+- Repository implementations reviewed.
+
+---
+
