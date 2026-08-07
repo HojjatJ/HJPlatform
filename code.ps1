@@ -1,120 +1,26 @@
-# HJPlatform Documentation Sync Script
-# Safe mode: existing docs only
+# --- 1. Create scripts directory if not exists ---
+$scriptsDir = "scripts"
+if (!(Test-Path $scriptsDir)) { New-Item -ItemType Directory -Path $scriptsDir -Force }
 
-$docs = Join-Path (Get-Location) "docs"
+# --- 2. Create manifest.txt with synchronized documentation ---
+$manifestPath = "$scriptsDir/manifest.txt"
+@"
+===FILE: README.md
+# HJPlatform
 
-if (!(Test-Path $docs)) {
-    throw "docs folder not found."
-}
+HJPlatform is a modular enterprise software solution built on .NET, following Clean Architecture and Domain-Driven Design (DDD) principles.
 
-$statusFile = Join-Path $docs "IMPLEMENTATION-STATUS.md"
+## Solution Structure
 
-if (Test-Path $statusFile) {
+- **HJ.Server.Domain**: Core domain models, entities, and repository interfaces.
+- **HJ.Server.Application**: Business logic, commands, queries, application services, DTOs, and mappings (`InstallationMapper`).
+- **HJ.Server.Infrastructure**: Data persistence, EF Core (`HJDbContext` with automatic `ApplyConfigurationsFromAssembly`), and repository implementations.
+- **HJ.Server.Api**: FastEndpoints, global exception handling, Swagger documentation, and middleware pipeline.
+- **HJ.Server.Contracts**: Shared contracts, API requests, and response DTOs.
+- **HJ.Server.Foundation**: Common foundational utilities.
 
-    $content = Get-Content $statusFile -Raw
+## Getting Started
 
-    $content = $content -replace "Last updated:\s*\d{4}-\d{2}-\d{2}",
-        "Last updated: 2026-08-07"
-
-    if ($content -notmatch "## API Layer") {
-
-        $section = @'
-
----
-
-## API Layer — وضعیت تفصیلی
-
-**Status: Implemented and Verified**
-
-Completed:
-
-- FastEndpoints configured.
-- Health endpoint implemented.
-- Product create endpoint implemented.
-- Installation endpoints implemented.
-- Global exception handling implemented.
-- Swagger configuration completed.
-- API layer contains no business rules.
-
----
-
-## Application Layer — وضعیت تفصیلی
-
-**Status: Implemented and Verified**
-
-Completed:
-
-- ProductService implemented.
-- InstallationService implemented.
-- FluentValidation integrated.
-- Mapperly mapping registered through DI.
-- ProductAlreadyExistsException introduced.
-- CancellationToken flow verified.
-
----
-
-## Infrastructure Layer — وضعیت تفصیلی
-
-**Status: Implemented and Verified**
-
-Completed:
-
-- EF Core persistence configured.
-- ApplyConfigurationsFromAssembly verified.
-- Product persistence completed.
-- Installation persistence configuration completed.
-- Repository implementations reviewed.
-
----
-
-'@
-
-        Add-Content -Path $statusFile -Value $section -Encoding UTF8
-
-        Write-Host "IMPLEMENTATION-STATUS.md updated"
-    }
-    else {
-        Write-Host "IMPLEMENTATION-STATUS already contains API section"
-    }
-}
-
-
-$progressFile = Join-Path $docs "PROGRESS-LOG.md"
-
-if (Test-Path $progressFile) {
-
-    $progress = Get-Content $progressFile -Raw
-
-    if ($progress -notmatch "2026-08-07 — Application / Infrastructure / API Completion Review") {
-
-        $entry = @'
-
----
-
-## 2026-08-07 — Application / Infrastructure / API Completion Review
-
-Completed:
-
-- Application layer review completed.
-- API endpoints reviewed.
-- Infrastructure persistence reviewed.
-- Exception handling flow verified.
-- Documentation synchronized.
-
-Validation:
-
-- dotnet build PASS
-- dotnet test PASS
-
-'@
-
-        Add-Content -Path $progressFile -Value $entry -Encoding UTF8
-
-        Write-Host "PROGRESS-LOG.md updated"
-    }
-    else {
-        Write-Host "Progress entry already exists"
-    }
-}
-
-Write-Host "Documentation synchronization completed." -ForegroundColor Green
+1. Restore dependencies:
+   ```powershell
+   dotnet restore
