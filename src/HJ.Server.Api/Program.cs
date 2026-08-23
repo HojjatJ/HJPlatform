@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Application and Infrastructure DI (API does not configure EF Core directly)
 builder.Services.AddHJApplication();
-builder.Services.AddHJInfrastructure();
+builder.Services.AddHJInfrastructure(builder.Configuration);
 
 builder.Services.AddFastEndpoints();
 builder.Services.SwaggerDocument(o =>

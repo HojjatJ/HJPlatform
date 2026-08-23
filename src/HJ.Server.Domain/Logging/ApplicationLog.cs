@@ -1,23 +1,35 @@
+using System;
 using HJ.Server.Domain.Common;
-namespace HJ.Server.Domain.Logging;
 
+namespace HJ.Server.Domain.Logging;
 
 public class ApplicationLog : BaseEntity
 {
-    
-
     public Guid InstallationId { get; set; }
-
     public Guid OperationId { get; set; }
-
     public string Level { get; set; } = default!;
-
     public string Message { get; set; } = default!;
-
     public string? ExceptionJson { get; set; }
-
     public string? PropertiesJson { get; set; }
 
-    
+    public static ApplicationLog Create(
+        string level,
+        string message,
+        Guid installationId,
+        Guid operationId,
+        string? exceptionJson,
+        string? propertiesJson)
+    {
+        return new ApplicationLog
+        {
+            Id = Guid.NewGuid(),
+            Level = level,
+            Message = message,
+            InstallationId = installationId,
+            OperationId = operationId,
+            ExceptionJson = exceptionJson,
+            PropertiesJson = propertiesJson,
+            CreatedAt = DateTime.UtcNow
+        };
+    }
 }
-
