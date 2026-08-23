@@ -22,25 +22,18 @@ public class HealthEndpointTests
             });
         }).CreateClient();
     }
-    // ... rest of the file
-}
 
-[Fact]
-public async Task Health_Should_Return_Ok()
-
+    [Fact]
+    public async Task Health_Should_Return_Ok()
     {
         var response = await _client.GetAsync("/api/health");
-
 
         response.StatusCode.Should()
             .Be(HttpStatusCode.OK);
 
-
         var content = await response.Content.ReadAsStringAsync();
-
 
         content.Should()
             .Contain("HJPlatform");
     }
 }
-
