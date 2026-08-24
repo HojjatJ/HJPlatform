@@ -1,4 +1,5 @@
 using System;
+using HJ.Server.Contracts.Operations;
 
 namespace HJ.Server.Contracts.Operations;
 
@@ -9,4 +10,4 @@ public record OperationDto(
     string Type,
     DateTime StartedAt,
     DateTime? EndedAt,
-    string Status);
+    OperationStatusDto Status);

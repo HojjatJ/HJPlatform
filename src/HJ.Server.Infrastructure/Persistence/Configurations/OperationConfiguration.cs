@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace HJ.Server.Infrastructure.Persistence.Configurations;
 
 
-public class OperationConfiguration 
+public class OperationConfiguration
     : IEntityTypeConfiguration<Operation>
 {
     public void Configure(EntityTypeBuilder<Operation> builder)
@@ -25,8 +25,9 @@ public class OperationConfiguration
         builder.Property(x => x.Type)
             .HasMaxLength(100);
 
-
         builder.Property(x => x.Status)
+            .HasConversion<string>()
             .HasMaxLength(50);
     }
 }
+

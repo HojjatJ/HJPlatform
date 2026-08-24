@@ -14,6 +14,14 @@ public class OperationMapper
             operation.Type,
             operation.StartedAt,
             operation.EndedAt,
-            operation.Status);
+            MapStatusToDto(operation.Status));
     }
+
+    private OperationStatusDto MapStatusToDto(OperationStatus status) => status switch
+    {
+        OperationStatus.Started => OperationStatusDto.Started,
+        OperationStatus.Completed => OperationStatusDto.Completed,
+        OperationStatus.Failed => OperationStatusDto.Failed,
+        _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+    };
 }

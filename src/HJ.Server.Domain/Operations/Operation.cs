@@ -11,11 +11,11 @@ public class Operation : BaseEntity
     public string Type { get; set; } = default!;
     public DateTime StartedAt { get; set; }
     public DateTime? EndedAt { get; set; }
-    public string Status { get; set; } = default!;
+    public OperationStatus Status { get; set; }
 
     public ICollection<OperationExecution> Executions { get; set; } = new List<OperationExecution>();
 
-    public static Operation Create(Guid installationId, string type)
+    public static Operation Create(Guid installationId, string type, Guid? tenantId)
     {
         return new Operation
         {
@@ -23,12 +23,13 @@ public class Operation : BaseEntity
             InstallationId = installationId,
             Type = type,
             StartedAt = DateTime.UtcNow,
-            Status = "Started",
-            CreatedAt = DateTime.UtcNow
+            Status = OperationStatus.Started,
+            CreatedAt = DateTime.UtcNow,
+            TenantId = tenantId
         };
     }
 
-    public void Complete(string status)
+    public void Complete(OperationStatus status)
     {
         Status = status;
         EndedAt = DateTime.UtcNow;

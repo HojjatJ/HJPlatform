@@ -1,4 +1,6 @@
+using HJ.Server.Contracts.Operations;
+
 namespace HJ.Server.Contracts.Operations.Requests;
 
 public record CompleteOperationRequest(
-    string Status);
+    OperationStatusDto Status);
