@@ -12,7 +12,7 @@ namespace HJ.Server.Infrastructure.Persistence.Optimized
     public partial class HJDbContextModel
     {
         private HJDbContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("515a83fa-5c1b-4055-aa50-1e3835c38024"), entityTypeCount: 9)
+            : base(skipDetectChanges: false, modelId: new Guid("5c5b8e65-6da8-4b81-9bde-57b4e09882d6"), entityTypeCount: 9)
         {
         }
 

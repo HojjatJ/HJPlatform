@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using HJ.Server.Application.Products;
 using HJ.Server.Application.Installations;
+using HJ.Server.Domain.Operations.Exceptions;
 
 namespace HJ.Server.Api.Exceptions;
 
@@ -19,6 +20,8 @@ public static class GlobalExceptionHandlerExtensions
                 var (statusCode, title) = exception switch
                 {
                     ProductAlreadyExistsException => (StatusCodes.Status409Conflict, "Conflict"),
+                    OperationAlreadyCompletedException => (StatusCodes.Status400BadRequest, "Bad Request"),
+                    OperationNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
                     _ => (StatusCodes.Status500InternalServerError, "Internal Server Error")
                 };
 

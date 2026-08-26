@@ -155,9 +155,9 @@ namespace HJ.Server.Infrastructure.Persistence.Optimized
             var executions = principalEntityType.AddNavigation("Executions",
                 runtimeForeignKey,
                 onDependent: false,
-                typeof(IReadOnlyCollection<OperationExecution>),
+                typeof(ICollection<OperationExecution>),
                 propertyInfo: typeof(Operation).GetProperty("Executions", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(Operation).GetField("_executions", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                fieldInfo: typeof(Operation).GetField("<Executions>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             return runtimeForeignKey;
         }
@@ -167,7 +167,7 @@ namespace HJ.Server.Infrastructure.Persistence.Optimized
             runtimeEntityType.AddAnnotation("Relational:FunctionName", null);
             runtimeEntityType.AddAnnotation("Relational:Schema", null);
             runtimeEntityType.AddAnnotation("Relational:SqlQuery", null);
-            runtimeEntityType.AddAnnotation("Relational:TableName", "OperationExecution");
+            runtimeEntityType.AddAnnotation("Relational:TableName", "OperationExecutions");
             runtimeEntityType.AddAnnotation("Relational:ViewName", null);
             runtimeEntityType.AddAnnotation("Relational:ViewSchema", null);
 

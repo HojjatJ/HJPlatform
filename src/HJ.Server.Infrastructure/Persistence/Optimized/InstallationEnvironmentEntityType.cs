@@ -28,6 +28,8 @@ namespace HJ.Server.Infrastructure.Persistence.Optimized
             var installationId = runtimeEntityType.AddProperty(
                 "InstallationId",
                 typeof(Guid),
+                propertyInfo: typeof(InstallationEnvironment).GetProperty("InstallationId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(InstallationEnvironment).GetField("<InstallationId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 afterSaveBehavior: PropertySaveBehavior.Throw,
                 sentinel: new Guid("00000000-0000-0000-0000-000000000000"));
             installationId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);

@@ -43,6 +43,9 @@ public class OperationService : IOperationService
         var operation = await _repository.GetByIdAsync(operationId, cancellationToken)        
             ?? throw new OperationNotFoundException(operationId);
 
+        if (operation.Status == OperationStatus.Completed)
+            throw new OperationAlreadyCompletedException(operationId);
+
         operation.Complete(MapStatusFromDto(request.Status));
 
         await _repository.UpdateAsync(operation, cancellationToken);

@@ -86,10 +86,12 @@ namespace HJ.Server.Infrastructure.Persistence.Optimized
 
             var status = runtimeEntityType.AddProperty(
                 "Status",
-                typeof(string),
+                typeof(OperationStatus),
                 propertyInfo: typeof(Operation).GetProperty("Status", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Operation).GetField("<Status>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                maxLength: 50);
+                maxLength: 50,
+                providerPropertyType: typeof(string));
+            status.SetSentinelFromProviderValue("Started");
             status.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var tenantId = runtimeEntityType.AddProperty(

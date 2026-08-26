@@ -3,6 +3,7 @@ using System;
 using HJ.Server.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HJ.Server.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(HJDbContext))]
-    partial class HJDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260825234002_SyncModelWithInitialPersistence")]
+    partial class SyncModelWithInitialPersistence
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

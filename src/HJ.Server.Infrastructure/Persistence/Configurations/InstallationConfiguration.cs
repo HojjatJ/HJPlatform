@@ -30,9 +30,21 @@ public class InstallationConfiguration : IEntityTypeConfiguration<Installation>
         builder.Property(x => x.LastSeenAt)
             .IsRequired();
 
-        builder.HasOne(x => x.Environment)
-            .WithOne()
-            .HasForeignKey<InstallationEnvironment>(x => x.InstallationId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.OwnsOne(x => x.Environment, env =>
+        {
+            env.ToTable("InstallationEnvironments");
+
+            env.Property(x => x.OSVersion).HasMaxLength(200);
+            env.Property(x => x.CpuName).HasMaxLength(200);
+            env.Property(x => x.ScreenResolution).HasMaxLength(50);
+            env.Property(x => x.HardwareIdentifier).HasMaxLength(250);
+
+            env.WithOwner()
+               .HasForeignKey("InstallationId");
+
+            env.HasKey("InstallationId");
+
+            env.Ignore(x => x.Id);
+        });
     }
 }

@@ -17,7 +17,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddHJInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("Default");
+        var connectionString = configuration.GetConnectionString("IntegrationTest") 
+            ?? configuration.GetConnectionString("Default");
 
         if (!string.IsNullOrEmpty(connectionString))
         {
@@ -29,7 +30,6 @@ public static class ServiceCollectionExtensions
             services.AddDbContext<HJDbContext>(options =>
                 options.UseInMemoryDatabase("HJPlatformDb"));
         }
-
         services.AddScoped<IInstallationRepository, InstallationRepository>();
         services.AddScoped<IOperationRepository, OperationRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
