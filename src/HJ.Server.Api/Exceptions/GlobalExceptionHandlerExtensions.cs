@@ -19,10 +19,14 @@ public static class GlobalExceptionHandlerExtensions
 
                 var (statusCode, title) = exception switch
                 {
-                    ProductAlreadyExistsException => (StatusCodes.Status409Conflict, "Conflict"),
-                    OperationAlreadyCompletedException => (StatusCodes.Status400BadRequest, "Bad Request"),
-                    OperationNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
-                    _ => (StatusCodes.Status500InternalServerError, "Internal Server Error")
+                    null => (StatusCodes.Status500InternalServerError, "Internal Server Error"),
+                    _ => exception.GetType().Name switch
+                    {
+                        var name when name.EndsWith("NotFoundException") => (StatusCodes.Status404NotFound, "Not Found"),
+                        var name when name.EndsWith("AlreadyExistsException") => (StatusCodes.Status409Conflict, "Conflict"),
+                        _ when exception.GetType().Namespace?.StartsWith("HJ.Server.Domain") == true => (StatusCodes.Status400BadRequest, "Bad Request"),
+                        _ => (StatusCodes.Status500InternalServerError, "Internal Server Error")
+                    }
                 };
 
                 context.Response.StatusCode = statusCode;
