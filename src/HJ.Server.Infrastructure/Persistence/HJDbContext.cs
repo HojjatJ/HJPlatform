@@ -16,7 +16,6 @@ public class HJDbContext : DbContext
 
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Installation> Installations => Set<Installation>();
-    public DbSet<InstallationEnvironment> InstallationEnvironments => Set<InstallationEnvironment>();
     public DbSet<Operation> Operations => Set<Operation>();
     public DbSet<OperationExecution> OperationExecutions => Set<OperationExecution>();
     public DbSet<ApplicationLog> ApplicationLogs => Set<ApplicationLog>();
