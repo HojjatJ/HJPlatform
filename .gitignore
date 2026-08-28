@@ -34,3 +34,10 @@ appsettings.Development.json
 **/obj/
 tree_output.txt
 **/AllCsFiles.txt
+
+# Local / AI assistant artifacts
+GEMINI.md
+gemini assistant.bat
+build_log.txt
+GeometryEngine.zip
+reconciliation_audit_report.txt
