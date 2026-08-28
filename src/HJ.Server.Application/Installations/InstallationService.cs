@@ -44,25 +44,6 @@ public class InstallationService : IInstallationService
         var installation = await _repository.GetByInstallationIdAsync(installationId, cancellationToken)
             ?? throw new InstallationNotFoundException(installationId);
 
-        if (request.ProductVersionId.HasValue && request.ProductVersionId.Value != installation.ProductVersionId)
-        {
-            installation.UpdateVersion(request.ProductVersionId.Value);
-        }
-
-        if (!string.IsNullOrWhiteSpace(request.HardwareIdentifier))
-        {
-            var env = InstallationEnvironment.Create(
-                installation.Id,
-                request.OSVersion,
-                request.CpuName,
-                request.CpuCoreCount ?? 0,
-                request.RamGB ?? 0,
-                request.ScreenResolution,
-                request.HardwareIdentifier);
-
-            installation.SetEnvironment(env);
-        }
-
         installation.RecordHeartbeat();
 
         await _repository.UpdateAsync(installation, cancellationToken);

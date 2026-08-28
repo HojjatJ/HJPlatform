@@ -13,21 +13,32 @@ namespace HJ.Server.UnitTests.Installations;
 public class InstallationServiceTests
 {
     [Fact]
-    public async Task GetAsync_Should_Return_InstallationDto()
+    public async Task RecordHeartbeatAsync_Should_Not_Mutate_Version_Or_Environment()
     {
         var repository = Substitute.For<IInstallationRepository>();
         var mapper = new InstallationMapper();
         var service = new InstallationService(repository, mapper);
         
         var installationId = Guid.NewGuid();
-        var installation = Installation.Create(installationId, Guid.NewGuid(), Guid.NewGuid(), null);
+        var initialVersionId = Guid.NewGuid();
+        var initialEnv = InstallationEnvironment.Create(installationId, "Win10", "CPU", 4, 16, "1920x1080", "HWID");
+        
+        var installation = Installation.Create(installationId, Guid.NewGuid(), initialVersionId, null);
+        installation.SetEnvironment(initialEnv);
         
         repository.GetByInstallationIdAsync(installationId, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<Installation?>(installation));
 
-        var result = await service.GetAsync(installationId);
+        var request = new RecordHeartbeatRequest
+        {
+            ProductVersionId = Guid.NewGuid(), // Different version
+            HardwareIdentifier = "NEW-HWID",
+            OSVersion = "Win11" // Different env
+        };
 
-        result.Should().NotBeNull();
-        result.InstallationId.Should().Be(installationId);
+        await service.RecordHeartbeatAsync(installationId, request);
+
+        installation.ProductVersionId.Should().Be(initialVersionId);
+        installation.Environment.Should().BeSameAs(initialEnv);
     }
 }
