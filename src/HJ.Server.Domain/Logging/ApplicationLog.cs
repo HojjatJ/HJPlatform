@@ -5,12 +5,16 @@ namespace HJ.Server.Domain.Logging;
 
 public class ApplicationLog : BaseEntity
 {
-    public Guid InstallationId { get; set; }
-    public Guid OperationId { get; set; }
-    public string Level { get; set; } = default!;
-    public string Message { get; set; } = default!;
-    public string? ExceptionJson { get; set; }
-    public string? PropertiesJson { get; set; }
+    public Guid InstallationId { get; private set; }
+    public Guid OperationId { get; private set; }
+    public string Level { get; private set; } = default!;
+    public string Message { get; private set; } = default!;
+    public string? ExceptionJson { get; private set; }
+    public string? PropertiesJson { get; private set; }
+
+    private ApplicationLog()
+    {
+    }
 
     public static ApplicationLog Create(
         string level,
@@ -20,6 +24,15 @@ public class ApplicationLog : BaseEntity
         string? exceptionJson,
         string? propertiesJson)
     {
+        if (string.IsNullOrWhiteSpace(level))
+            throw new ArgumentException("Level cannot be null or whitespace.", nameof(level));
+        if (string.IsNullOrWhiteSpace(message))
+            throw new ArgumentException("Message cannot be null or whitespace.", nameof(message));
+        if (installationId == Guid.Empty)
+            throw new ArgumentException("Installation ID cannot be empty.", nameof(installationId));
+        if (operationId == Guid.Empty)
+            throw new ArgumentException("Operation ID cannot be empty.", nameof(operationId));
+
         return new ApplicationLog
         {
             Id = Guid.NewGuid(),
