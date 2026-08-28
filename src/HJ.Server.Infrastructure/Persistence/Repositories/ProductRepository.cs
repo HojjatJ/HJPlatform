@@ -22,7 +22,7 @@ public class ProductRepository : IProductRepository
 
         if (tenantId.HasValue)
         {
-            // query = query.Where(p => p.TenantId == tenantId.Value);
+            // Single-tenant mode until Auth phase (see ADR-LOG). No tenant filtering enforced.
         }
 
         return await query.FirstOrDefaultAsync(p => p.Code == code, cancellationToken);
